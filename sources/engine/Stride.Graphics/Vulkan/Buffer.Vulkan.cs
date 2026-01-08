@@ -20,7 +20,7 @@ namespace Stride.Graphics
         /// <param name="viewFlags">Type of the buffer.</param>
         /// <param name="viewFormat">The view format.</param>
         /// <param name="dataPointer">The data pointer.</param>
-        protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
+        protected partial Buffer InitializeFromImpl(ref readonly BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
             bufferDescription = description;
             //nativeDescription = ConvertToNativeDescription(Description);
@@ -38,7 +38,7 @@ namespace Stride.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        protected internal override void OnDestroyed(bool immediately = false)
         {
             GraphicsDevice.RegisterBufferMemoryUsage(-SizeInBytes);
 
@@ -60,7 +60,7 @@ namespace Stride.Graphics
                 NativeMemory = VkDeviceMemory.Null;
             }
 
-            base.OnDestroyed();
+            base.OnDestroyed(immediately);
         }
 
         /// <inheritdoc/>
@@ -152,7 +152,7 @@ namespace Stride.Graphics
             }
 
             // Create buffer
-            GraphicsDevice.NativeDeviceApi.vkCreateBuffer(GraphicsDevice.NativeDevice, &createInfo, null, out NativeBuffer);
+            GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateBuffer(GraphicsDevice.NativeDevice, &createInfo, null, out NativeBuffer));
 
             // Allocate memory
             var memoryProperties = VkMemoryPropertyFlags.DeviceLocal;
@@ -172,17 +172,7 @@ namespace Stride.Graphics
 
             if (SizeInBytes > 0)
             {
-                // Begin copy command buffer
-                var commandBufferAllocateInfo = new VkCommandBufferAllocateInfo
-                {
-                    sType = VkStructureType.CommandBufferAllocateInfo,
-                    commandPool = GraphicsDevice.NativeCopyCommandPools.Value,
-                    commandBufferCount = 1,
-                    level = VkCommandBufferLevel.Primary
-                };
-                VkCommandBuffer commandBuffer;
-
-                GraphicsDevice.NativeDeviceApi.vkAllocateCommandBuffers(GraphicsDevice.NativeDevice, &commandBufferAllocateInfo, &commandBuffer);
+                var commandBuffer = GraphicsDevice.NativeCopyCommandPools.Value.GetObject(GraphicsDevice.CopyFence.GetCompletedValue());
 
                 var beginInfo = new VkCommandBufferBeginInfo { sType = VkStructureType.CommandBufferBeginInfo, flags = VkCommandBufferUsageFlags.OneTimeSubmit };
                 GraphicsDevice.NativeDeviceApi.vkBeginCommandBuffer(commandBuffer, &beginInfo);
@@ -194,7 +184,7 @@ namespace Stride.Graphics
                     {
                         void* uploadMemory;
                         GraphicsDevice.NativeDeviceApi.vkMapMemory(GraphicsDevice.NativeDevice, NativeMemory, 0, (ulong) SizeInBytes, VkMemoryMapFlags.None, &uploadMemory);
-                        Utilities.CopyWithAlignmentFallback(uploadMemory, (void*) dataPointer, (uint) SizeInBytes);
+                        MemoryUtilities.CopyWithAlignmentFallback(uploadMemory, (void*) dataPointer, (uint) SizeInBytes);
                         GraphicsDevice.NativeDeviceApi.vkUnmapMemory(GraphicsDevice.NativeDevice, NativeMemory);
                     }
                     else
@@ -202,7 +192,7 @@ namespace Stride.Graphics
                         var sizeInBytes = bufferDescription.SizeInBytes;
                         var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out var uploadResource, out var uploadOffset);
 
-                        Utilities.CopyWithAlignmentFallback((void*) uploadMemory, (void*) dataPointer, (uint) sizeInBytes);
+                        MemoryUtilities.CopyWithAlignmentFallback((void*) uploadMemory, (void*) dataPointer, (uint) sizeInBytes);
 
                         // Barrier
                         var memoryBarrier = new VkBufferMemoryBarrier(uploadResource, VkAccessFlags.HostWrite, VkAccessFlags.TransferRead, (ulong) uploadOffset, (ulong) sizeInBytes);
@@ -228,23 +218,13 @@ namespace Stride.Graphics
                 GraphicsDevice.NativeDeviceApi.vkCmdPipelineBarrier(commandBuffer, VkPipelineStageFlags.Transfer, VkPipelineStageFlags.AllCommands, VkDependencyFlags.None, memoryBarrierCount: 0, memoryBarriers: null, bufferMemoryBarrierCount: 1, &bufferMemoryBarrier, imageMemoryBarrierCount: 0, imageMemoryBarriers: null);
 
                 // Close and submit
-                GraphicsDevice.NativeDeviceApi.vkEndCommandBuffer(commandBuffer);
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkEndCommandBuffer(commandBuffer));
 
-                var submitInfo = new VkSubmitInfo
-                {
-                    sType = VkStructureType.SubmitInfo,
-                    commandBufferCount = 1,
-                    pCommandBuffers = &commandBuffer
-                };
+                var copyFenceValue = GraphicsDevice.ExecuteAndWaitCopyQueueGPU(commandBuffer);
+                GraphicsDevice.NativeCopyCommandPools.Value.RecycleObject(GraphicsDevice.CopyFence.NextFenceValue, commandBuffer);
 
-                lock (GraphicsDevice.QueueLock)
-                {
-                    GraphicsDevice.NativeDeviceApi.vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, VkFence.Null);
-                    GraphicsDevice.NativeDeviceApi.vkQueueWaitIdle(GraphicsDevice.NativeCommandQueue);
-                    //commandBuffer.Reset(VkCommandBufferResetFlags.None);
-                }
-
-                GraphicsDevice.NativeDeviceApi.vkFreeCommandBuffers(GraphicsDevice.NativeDevice, GraphicsDevice.NativeCopyCommandPools.Value, commandBufferCount: 1, &commandBuffer);
+                // Make sure any subsequent CPU access (i.e. MapSubresource) will wait for copy command list to be finished
+                CopyFenceValue = copyFenceValue;
 
                 InitializeViews();
             }
@@ -279,7 +259,7 @@ namespace Stride.Graphics
                 //view = (Description.BufferFlags & BufferFlags.RawBuffer) != 0 ? VkBufferViewType.Raw : VkBufferViewType.Formatted,
             };
 
-            GraphicsDevice.NativeDeviceApi.vkCreateBufferView(GraphicsDevice.NativeDevice, &createInfo, allocator: null, out var bufferView);
+            GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateBufferView(GraphicsDevice.NativeDevice, &createInfo, allocator: null, out var bufferView));
             return bufferView;
         }
 
@@ -294,7 +274,7 @@ namespace Stride.Graphics
                 }
                 else if ((ViewFlags & BufferFlags.ShaderResource) != 0)
                 {
-                    count = Description.SizeInBytes / viewFormat.SizeInBytes();
+                    count = Description.SizeInBytes / viewFormat.SizeInBytes;
                 }
                 else
                 {

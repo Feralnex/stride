@@ -67,8 +67,8 @@ namespace Stride.Graphics
 
         private void Recreate()
         {
-            NativeDescriptorPool = GraphicsDevice.DescriptorPools.GetObject();
-            
+            NativeDescriptorPool = GraphicsDevice.descriptorPools.GetObject();
+
             allocatedTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount];
             allocatedSetCount = 0;
         }
@@ -81,11 +81,11 @@ namespace Stride.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override void OnDestroyed()
+        protected internal override void OnDestroyed(bool immediately = false)
         {
             GraphicsDevice.DescriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, NativeDescriptorPool);
 
-            base.OnDestroyed();
+            base.OnDestroyed(immediately);
         }
     }
 }
