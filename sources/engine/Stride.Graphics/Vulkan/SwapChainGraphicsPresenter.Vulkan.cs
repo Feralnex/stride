@@ -168,7 +168,7 @@ namespace Stride.Graphics
                     pSignalSemaphores = &submitSemaphore,
                 };
 
-                GraphicsDevice.CheckResult(vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, frameFences[currentFrameIndex]));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, frameFences[currentFrameIndex]));
 
                 var currentBufferIndexCopy = currentBufferIndex;
                 var swapChainCopy = swapChain;
@@ -254,7 +254,7 @@ namespace Stride.Graphics
                     pSignalSemaphores = &commandListFence,
                 };
 
-                GraphicsDevice.CheckResult(vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, VkFence.Null));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, VkFence.Null));
             }
         }
 
@@ -352,7 +352,7 @@ namespace Stride.Graphics
 
             foreach (var semaphore in submitSemaphores)
             {
-                vkDestroySemaphore(GraphicsDevice.NativeDevice, semaphore);
+                GraphicsDevice.NativeDeviceApi.vkDestroySemaphore(GraphicsDevice.NativeDevice, semaphore);
             }
             submitSemaphores = null;
 
@@ -522,7 +522,7 @@ namespace Stride.Graphics
                     hinstance = Process.GetCurrentProcess().Handle,
                     hwnd = controlHandle,
                 };
-                GraphicsDevice.CheckResult(vkCreateWin32SurfaceKHR(GraphicsDevice.NativeInstance, &surfaceCreateInfo, null, out surface));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeInstanceApi.vkCreateWin32SurfaceKHR(GraphicsDevice.NativeInstance, &surfaceCreateInfo, null, out surface));
             }
             else if (Platform.Type == PlatformType.Android)
             {
@@ -591,8 +591,8 @@ namespace Stride.Graphics
             for (int index = 0; index < buffers.Length; index++)
             {
                 // Create image views
-                swapchainImages[i].NativeImage = createInfo.image = buffers[i];
-                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateImageView(GraphicsDevice.NativeDevice, &createInfo, null, out swapchainImages[i].NativeColorAttachmentView));
+                swapchainImages[index].NativeImage = createInfo.image = buffers[index];
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateImageView(GraphicsDevice.NativeDevice, &createInfo, null, out swapchainImages[index].NativeColorAttachmentView));
 
                 // Transition to default layout
                 imageMemoryBarrier.image = buffers[index];
@@ -610,8 +610,8 @@ namespace Stride.Graphics
                     commandBufferCount = 1,
                     pCommandBuffers = &commandBuffer,
                 };
-                GraphicsDevice.CheckResult(vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, VkFence.Null));
-                GraphicsDevice.CheckResult(vkQueueWaitIdle(GraphicsDevice.NativeCommandQueue));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkQueueSubmit(GraphicsDevice.NativeCommandQueue, 1, &submitInfo, VkFence.Null));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkQueueWaitIdle(GraphicsDevice.NativeCommandQueue));
             }
 
             GraphicsDevice.NativeCopyCommandPools.Value.RecycleObject(0, commandBuffer);
@@ -620,14 +620,14 @@ namespace Stride.Graphics
             submitSemaphores = new VkSemaphore[buffers.Length];
             var semaphoreCreateInfo = new VkSemaphoreCreateInfo { sType = VkStructureType.SemaphoreCreateInfo };
             for (int i = 0; i < submitSemaphores.Length; ++i)
-                GraphicsDevice.CheckResult(vkCreateSemaphore(GraphicsDevice.NativeDevice, &semaphoreCreateInfo, null, out submitSemaphores[i]));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateSemaphore(GraphicsDevice.NativeDevice, &semaphoreCreateInfo, null, out submitSemaphores[i]));
 
             frameFences = new VkFence[kNumberOfFramesInFlight];
             acquireSemaphores = new VkSemaphore[kNumberOfFramesInFlight];
             var fenceCreateInfo = new VkFenceCreateInfo { sType = VkStructureType.FenceCreateInfo };
             for (int i = 0; i < kNumberOfFramesInFlight; i++)
             {
-                GraphicsDevice.CheckResult(vkCreateSemaphore(GraphicsDevice.NativeDevice, &semaphoreCreateInfo, null, out acquireSemaphores[i]));
+                GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateSemaphore(GraphicsDevice.NativeDevice, &semaphoreCreateInfo, null, out acquireSemaphores[i]));
                 // Make all fence except 0 as signaled (so that next Present()=>vkWaitForFences is not blocked when fetching secondary buffers for first time)
                 fenceCreateInfo.flags = i == 0 ? VkFenceCreateFlags.None : VkFenceCreateFlags.Signaled;
                 GraphicsDevice.CheckResult(GraphicsDevice.NativeDeviceApi.vkCreateFence(GraphicsDevice.NativeDevice, &fenceCreateInfo, null, out frameFences[i]));

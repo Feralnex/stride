@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 16.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -278,7 +278,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ja", "ja", "{B4EABB0D-E495-
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stride.Video", "..\sources\engine\Stride.Video\Stride.Video.csproj", "{DA355C86-866F-4843-9B4D-63A173C750FB}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Stride.Editor.CrashReport", "..\sources\editor\Stride.Editor.CrashReport\Stride.Editor.CrashReport.shproj", "{AB574F65-1402-4476-9314-74DCDAF19097}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Stride.Editor.CrashReport", "..\sources\editor\Stride.Editor.CrashReport\Stride.Editor.CrashReport.csproj", "{AB574F65-1402-4476-9314-74DCDAF19097}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "72-StrideSamples", "72-StrideSamples", "{75608B5C-1C03-4B38-810E-14EED5165E59}"
 EndProject
@@ -1283,6 +1283,12 @@ Global
 		{DA355C86-866F-4843-9B4D-63A173C750FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DA355C86-866F-4843-9B4D-63A173C750FB}.Release|Win32.ActiveCfg = Release|Any CPU
 		{DA355C86-866F-4843-9B4D-63A173C750FB}.Release|Win32.Build.0 = Release|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{AB574F65-1402-4476-9314-74DCDAF19097}.Release|Win32.ActiveCfg = Release|Any CPU
 		{2FC40214-A4AA-45DC-9C93-72ED800C40B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FC40214-A4AA-45DC-9C93-72ED800C40B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FC40214-A4AA-45DC-9C93-72ED800C40B0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -1646,7 +1652,6 @@ Global
 		..\sources\assets\Stride.Core.Assets.Yaml\Stride.Core.Assets.Yaml.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 5
 		..\sources\shared\Stride.Core.ShellHelper\Stride.Core.ShellHelper.projitems*{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}*SharedItemsImports = 5
 		..\sources\shared\Stride.NuGetResolver.Targets\Stride.NuGetResolver.Targets.projitems*{2fc40214-a4aa-45dc-9c93-72ed800c40b0}*SharedItemsImports = 5
-		..\sources\editor\Stride.Editor.CrashReport\Stride.Editor.CrashReport.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 5
 		..\sources\editor\Stride.PrivacyPolicy\Stride.PrivacyPolicy.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 5
 		..\sources\shared\Stride.Core.ShellHelper\Stride.Core.ShellHelper.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 5
 		..\sources\shared\Stride.NuGetResolver.Targets\Stride.NuGetResolver.Targets.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 5
