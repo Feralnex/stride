@@ -2,6 +2,7 @@
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using Stride.Core;
+using Stride.Core.Mathematics;
 using Stride.Core.Serialization;
 using Stride.Core.Serialization.Contents;
 using Stride.UI;
@@ -30,6 +31,9 @@ namespace Stride.Engine
                 field?.UIElementServices = new UIElementServices { Services = Services };
             }
         }
+
+        [DataMember]
+        public Vector3 DesignResolution { get; set; }
 
         [DataMemberIgnore]
         internal IServiceRegistry Services

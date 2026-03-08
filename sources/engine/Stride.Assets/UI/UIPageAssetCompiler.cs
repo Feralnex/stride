@@ -1,4 +1,4 @@
-﻿// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
+// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
 // Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
 
 using System;
@@ -9,6 +9,7 @@ using Stride.Core.Assets.Compiler;
 using Stride.Core.BuildEngine;
 using Stride.Core;
 using Stride.Assets.SpriteFont;
+using Stride.Core.Mathematics;
 
 namespace Stride.Assets.UI
 {
@@ -37,7 +38,8 @@ namespace Stride.Assets.UI
             {
                 return new Engine.UIPage
                 {
-                    RootElement = Parameters.Hierarchy.RootParts.Count == 1 ? Parameters.Hierarchy.RootParts[0] : null
+                    RootElement = Parameters.Hierarchy.RootParts.Count == 1 ? Parameters.Hierarchy.RootParts[0] : null,
+                    DesignResolution = Parameters.Design.Resolution
                 };
             }
         }
