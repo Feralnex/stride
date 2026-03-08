@@ -33,7 +33,7 @@ namespace Stride.Engine
         }
 
         [DataMember]
-        public Vector3 DesignResolution { get; set; }
+        public Vector3 DesignResolution { get; init; }
 
         [DataMemberIgnore]
         internal IServiceRegistry Services
