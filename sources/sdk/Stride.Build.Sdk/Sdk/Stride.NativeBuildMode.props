@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Native build mode: MSVC (clang + MSVC linker, Windows only) or Clang (clang + LLD, all platforms).
+    Override via -p:StrideNativeBuildMode=Clang|MSVC, env var, or property.
+  -->
+
+  <PropertyGroup>
+    <!-- MSVC requires: targeting Windows, VS C++ tools loaded (VCINSTALLDIR), and MSBuild.exe runtime
+         (dotnet build / dotnet msbuild use Core MSBuild which can't load the Framework-only CppTasks). -->
+    <StrideNativeBuildMode Condition="'$(StrideNativeBuildMode)' == '' And ('$(StridePlatform)' == '' Or '$(StridePlatform)' == 'Windows') And '$(VCINSTALLDIR)' != '' And '$(MSBuildRuntimeType)' == 'Full'">MSVC</StrideNativeBuildMode>
+    <StrideNativeBuildMode Condition="'$(StrideNativeBuildMode)' == ''">Clang</StrideNativeBuildMode>
+  </PropertyGroup>
+
+  <!-- Set boolean flags for each build mode -->
+  <PropertyGroup>
+    <StrideNativeBuildModeClang Condition="'$(StrideNativeBuildMode)' == 'Clang'">true</StrideNativeBuildModeClang>
+    <StrideNativeBuildModeClang Condition="'$(StrideNativeBuildMode)' != 'Clang'">false</StrideNativeBuildModeClang>
+
+    <StrideNativeBuildModeMSVC Condition="'$(StrideNativeBuildMode)' == 'MSVC'">true</StrideNativeBuildModeMSVC>
+    <StrideNativeBuildModeMSVC Condition="'$(StrideNativeBuildMode)' != 'MSVC'">false</StrideNativeBuildModeMSVC>
+  </PropertyGroup>
+
+  <!-- Diagnostic target to inform user of build mode -->
+  <Target Name="_StrideNativeBuildModeInfo" BeforeTargets="Build" Condition="'$(StrideNativeOutputName)' != ''">
+    <Message Text="[Stride] Native build mode: $(StrideNativeBuildMode)" Importance="normal" />
+    <Message Text="[Stride] To override: dotnet build /p:StrideNativeBuildMode=Clang|MSVC" Importance="low" />
+  </Target>
+
+</Project>

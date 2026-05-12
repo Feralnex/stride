@@ -668,9 +668,10 @@ namespace Stride.Input
         {
             var context = gameContext;
 
-            // Add window specific input source
+            // Add window specific input source (null in headless mode)
             var windowInputSource = InputSourceFactory.NewWindowInputSource(context);
-            Sources.Add(windowInputSource);
+            if (windowInputSource != null)
+                Sources.Add(windowInputSource);
 
             // Add platform specific input sources
             switch (context.ContextType)
@@ -692,7 +693,7 @@ namespace Stride.Input
                 case AppContextType.UWPCoreWindow:
                     break;
 #endif
-                case AppContextType.Desktop:
+                case AppContextType.DesktopWinForms:
 #if (STRIDE_UI_WINFORMS || STRIDE_UI_WPF)
                     Sources.Add(new InputSourceWindowsDirectInput());
                     if (InputSourceWindowsXInput.IsSupported())
@@ -703,6 +704,8 @@ namespace Stride.Input
 #endif
 #endif
                     break;
+                case AppContextType.Headless:
+                    break; // No input sources in headless mode
                 default:
                     throw new InvalidOperationException("GameContext type is not supported by the InputManager");
             }
@@ -780,10 +783,8 @@ namespace Stride.Input
         private void OnInputDeviceAdded(IInputSource source, IInputDevice device)
         {
             devices.Add(device);
-            if (devicesById.ContainsKey(device.Id))
+            if (!devicesById.TryAdd(device.Id, device))
                 throw new InvalidOperationException($"Device with Id {device.Id}({device.Name}) already registered to {devicesById[device.Id].Name}");
-
-            devicesById.Add(device.Id, device);
 
             if (device is IKeyboardDevice)
             {

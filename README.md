@@ -8,6 +8,7 @@
 </a>
 </p>
 
+[![Build](https://github.com/stride3d/stride/actions/workflows/main.yml/badge.svg)](https://github.com/stride3d/stride/actions/workflows/main.yml)
 [![Join the chat at https://discord.gg/f6aerfE](https://img.shields.io/discord/500285081265635328.svg?style=flat&logo=discord&label=discord&logoColor=f2f2f2)](https://discord.gg/f6aerfE)
 [![All Contributors](https://img.shields.io/github/all-contributors/stride3d/stride?color=ee8449)](#contributors)
 [![Financial sponsors](https://img.shields.io/opencollective/all/stride3d?logo=opencollective)](https://opencollective.com/stride3d)
@@ -34,76 +35,18 @@ Our [Roadmap](https://doc.stride3d.net/latest/en/contributors/roadmap.html) comm
 
 ### Prerequisites
 
-1. **Latest [Git](https://git-scm.com/downloads)** with **Large File Support** selected during setup. For convenience, you might also use a Git UI client like [GitExtensions](https://gitextensions.github.io/).
-2. **[.NET 10.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)**
-   - Run `dotnet --info` in a console or PowerShell window to see which versions you have installed.
-3. **[Visual Studio 2026](https://visualstudio.microsoft.com/downloads/)** (the Community edition is free), with the following workloads. Follow this link if you would rather use [a different IDE or the command line](#build-stride-without-visual-studio).
-   - **.NET desktop development** with **.NET Framework 4.7.2 targeting pack** *(should be enabled by default)*
-   - **Desktop development with C++** with:
-     - **Windows 11 SDK (10.0.22621.0)** or a later version *(should be enabled by default)*
-     - **MSVC v143 - VS 2022 C++ x64/x86 build tools (Latest)** *(should be enabled by default)*
-     - **MSVC v143 - VS 2022 C++ ARM64/ARM64EC build tools (Latest)** *(not enabled by default, click Individual components tab to select or search)*
-     - **C++/CLI support for v143 build tools (Latest)** *(not enabled by default)*
-   - *Optional* (to target iOS/Android): **.NET Multi-platform App UI development** and the **Android SDK setup** individual component (enabled by default). Then, in Visual Studio, go to `Tools > Android > Android SDK Manager` and install **NDK** (version 20.1+) from the `Tools` tab.
-   - *Optional* (to build the VSIX package): **Visual Studio extension development**
+1. **Latest [Git](https://git-scm.com/downloads)** — the Windows installer includes Git LFS by default; make sure it stays enabled. For convenience, you can also use a UI client like [GitExtensions](https://gitextensions.github.io/).
+2. **[Visual Studio 2026](https://visualstudio.microsoft.com/downloads/)** (Community edition is free), with these two workloads:
+   - **.NET desktop development** (bundles the .NET 10 SDK)
+   - **Desktop development with C++**
 
-> [!NOTE]
-> The installation of Visual Studio with the required components may require up to **19 GB of disk space**, depending on your system and selected components.
-
-> [!WARNING]
-> If this is your first time installing the .NET SDK, you might need to restart your system after the installation so that the system can recognize the new environment variables.
+> See [docs/build/README.md](docs/build/README.md) for detailed prerequisites (specific MSVC toolset versions, optional iOS/Android/ARM64/VSIX components, command-line builds without VS, and troubleshooting).
 
 ### Build Stride
 
-1. **Clone the repository** using a Git UI client or from the command line:
-   ```bash
-   git lfs clone https://github.com/stride3d/stride.git
-   ```
-2. **Open the solution:**
-   - Open `<StrideDir>\build\Stride.sln` with Visual Studio 2026. 
-   - Build the `Stride.GameStudio` project in the `60-Editor` solution folder (it should be the default startup project) or run it directly from Visual Studio's toolbar.
-   - _Optionally_, open and build `Stride.Android.sln`, `Stride.iOS.sln`, etc.
-
-> [!WARNING]
-> **Do NOT use GitHub -> Code -> Download ZIP** option, as this won't include the LFS files.
-
-### Build Stride without Visual Studio
-
-1. **Install** [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/) (Go to *Tools for Visual Studio* and press download next to Build Tools for Visual Studio 2026) with the same prerequisites listed above.
-2. **Add MSBuild to your system's PATH:**
-   - Add MSBuild's directory to your `PATH` environment variable (e.g., `c:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Current\Bin`).
-3. **Clone the repository:**
-   ```bash
-   git lfs clone https://github.com/stride3d/stride.git
-
-   ```
-4. **Build using the command line:**
-   - Navigate to the `/build` directory in the command prompt and run:
-   ```bash
-   msbuild /t:Restore Stride.sln
-
-   ```
-   - Then run:
-   ```bash
-   compile.bat
-
-   ```
-
-### If Building Fails
-
-* Some errors for test projects are normal, GameStudio will start anyway.
-* The Visual Studio extension might fail to build if you are missing the [Visual Studio SDK](https://learn.microsoft.com/en-us/visualstudio/extensibility/installing-the-visual-studio-sdk?view=vs-2026), but Game Studio will start anyway.
-* If you skipped any of the **Prerequisites** thinking you already have the latest version, please update to the latest to be sure.
-* Visual Studio might have issues building properly if an older version is present alongside 2026. If you want to keep those versions, ensure they are up to date and that you are building Stride using Visual Studio 2026.
-* Your system's `PATH` should not contain older versions of MSBuild (e.g., `...\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin` should be removed).
-* Some changes might require a system reboot. Try that if you haven't yet, for example, if you see these errors:
-  * `Could not find a compatible version of MSBuild.`
-  * `Path to dotnet executable is not set.`
-* Ensure that Git, Git LFS, and Visual Studio can access the internet.
-* Close Visual Studio, clear the NuGet cache (`dotnet nuget locals all --clear`), delete the hidden `.vs` folder inside `\build` and the files inside `bin\packages`, kill any `msbuild` and other Visual Studio processes, then build the whole solution and run GameStudio.
-
-> [!WARNING]
-> Test solutions might fail, but this should not prevent you from building `Stride.GameStudio`.
+1. `git clone https://github.com/stride3d/stride.git`
+2. Open `build\Stride.sln` in Visual Studio 2026.
+3. Build the `Stride.GameStudio` project (default startup, in the `60-Editor` folder) or run it directly from the toolbar.
 
 ### Contribution Guidelines
 
@@ -111,19 +54,13 @@ Please check our [Contributing Guidelines](https://doc.stride3d.net/latest/en/co
 
 ## 🔬 Build Status
 
-|Branch| **master** |
-|:--:|:--:|
-|Windows D3D11|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildWindowsD3d11&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildWindowsD3d11),branch:master/statusIcon"/></a>
-|Windows D3D12|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildWindowsD3d12&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildWindowsD3d12),branch:master/statusIcon"/></a>
-|Windows Vulkan|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildWindowsVulkan&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildWindowsVulkan),branch:master/statusIcon"/></a>
-|Windows OpenGL|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildWindowsOpenGL&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildWindowsOpenGL),branch:master/statusIcon"/></a>
-|Windows OpenGL ES|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildWindowsOpenGLES&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildWindowsOpenGLES),branch:master/statusIcon"/></a>
-|iOS|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildiOS&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildiOS),branch:master/statusIcon"/></a>
-|Android|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildAndroid&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildAndroid),branch:master/statusIcon"/></a>
-|Linux Vulkan|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildLinuxVulkan&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildLinuxVulkan),branch:master/statusIcon"/></a>
-|Linux OpenGL|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_BuildLinuxOpenGL&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_BuildLinuxOpenGL),branch:master/statusIcon"/></a>
-|Tests Windows Simple| <a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_Tests_WindowsSimple&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_Tests_WindowsSimple),branch:master/statusIcon"/></a>
-|Tests Windows D3D11|<a href="https://teamcity.stride3d.net/viewType.html?buildTypeId=Engine_Tests_WindowsD3D11&branch=master&guest=1"><img src="https://teamcity.stride3d.net/app/rest/builds/buildType:(id:Engine_Tests_WindowsD3D11),branch:master/statusIcon"/></a> 
+| Build | Status |
+|:--|:--:|
+| Windows | [![](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-windows-runtime.yml) |
+| Linux Vulkan/OpenGL | [![](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-linux-runtime.yml) |
+| iOS | [![](https://github.com/stride3d/stride/actions/workflows/build-ios.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/build-ios.yml) |
+| Tests (Simple) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
+| Tests (Game/WARP) | [![](https://github.com/stride3d/stride/actions/workflows/test-windows.yml/badge.svg?branch=master)](https://github.com/stride3d/stride/actions/workflows/test-windows.yml) |
 
 ## 📖 Stride Documentation Landscape
 
@@ -268,6 +205,14 @@ Thanks to all these wonderful people who have contributed to Stride!
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/hoelzl"><img src="https://avatars.githubusercontent.com/u/35998?v=4?s=100" width="100px;" alt="Matthias Hölzl"/><br /><sub><b>Matthias Hölzl</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=hoelzl" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/kutal10"><img src="https://avatars.githubusercontent.com/u/36085864?v=4?s=100" width="100px;" alt="Rahul Pai "/><br /><sub><b>Rahul Pai </b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=kutal10" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ModxVoldHunter"><img src="https://avatars.githubusercontent.com/u/65139923?v=4?s=100" width="100px;" alt="ModxVoldHunter"/><br /><sub><b>ModxVoldHunter</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=ModxVoldHunter" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://codingsteve.com/"><img src="https://avatars.githubusercontent.com/u/36681624?v=4?s=100" width="100px;" alt="Steve"/><br /><sub><b>Steve</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=C0dingSteve" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/MEEMexe"><img src="https://avatars.githubusercontent.com/u/78092485?v=4?s=100" width="100px;" alt="Niklas Arndt"/><br /><sub><b>Niklas Arndt</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=MEEMexe" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ferafiks"><img src="https://avatars.githubusercontent.com/u/49789311?v=4?s=100" width="100px;" alt="Fera"/><br /><sub><b>Fera</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=ferafiks" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kreblc3428"><img src="https://avatars.githubusercontent.com/u/197451419?v=4?s=100" width="100px;" alt="Kreblc3428"/><br /><sub><b>Kreblc3428</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=Kreblc3428" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Acissathar"><img src="https://avatars.githubusercontent.com/u/10227954?v=4?s=100" width="100px;" alt="Will"/><br /><sub><b>Will</b></sub></a><br /><a href="https://github.com/stride3d/stride/commits?author=Acissathar" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
